@@ -39,7 +39,7 @@ const TableComponent = (props) => {
             </th>
           </tr>
         </thead>
-        <tbody>{props.mapElements(elements)}</tbody>
+        <tbody>{props.mapElements(elements, setElements)}</tbody>
       </table>
     </div>
   );

@@ -5,7 +5,8 @@ import App from "./App";
 import PageNotFound from "./components/PageNotFound";
 import Contracts from "./components/Contracts";
 import Contract from "./components/Contract";
-import Clients from "./components/Clients";
+import Workers from "./components/Workers";
+import Worker from "./components/Worker";
 
 export default (
   <Router history={history}>
@@ -13,9 +14,11 @@ export default (
       <div className="auth-wrapper">
         <div className="auth-inner">
           <Switch>
+            <Route exact path="/" component={Contracts} />
             <Route exact path="/contracts" component={Contracts} />
             <Route path="/contracts/id=:id" component={Contract} />
-            <Route path="/clients" component={Clients} />
+            <Route exact path="/workers" component={Workers} />
+            <Route path="/workers/id=:id" component={Worker} />
             <Route component={PageNotFound} />
           </Switch>
         </div>

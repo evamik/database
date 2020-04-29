@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 
 const ValidInput = (props) => {
   const [isValid, setValid] = useState(true);
-  const [validationMsg, setValidationMsg] = useState("Invalid input");
+  const [validationMsg, setValidationMsg] = useState(
+    "This field can't be empty."
+  );
   const [type, setType] = useState("text");
 
   useEffect(() => {
@@ -19,7 +21,7 @@ const ValidInput = (props) => {
           !isNaN(props.value) && props.value.length !== 0 && props.value > 0;
         break;
       default:
-        setValid(true);
+        bool = props.value.length !== 0;
         break;
     }
 
@@ -37,7 +39,6 @@ const ValidInput = (props) => {
         break;
       case "number":
         setType("number");
-        setValidationMsg("This field can't be empty.");
         break;
       case "above zero number":
         setType("number");

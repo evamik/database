@@ -3,17 +3,16 @@ import TableComponent from "./TableComponent";
 import RowButtons from "./RowButtons";
 import Axios from "axios";
 
-const Contract = () => {
-  const query = `SELECT contract.id, contract.order_date, 
-                worker.name AS 'workername', 
-                worker.surname AS 'workersurname', 
-                client.name AS 'clientname', 
-                client.surname AS 'clientsurname'
-                FROM contract
-                LEFT JOIN worker ON contract.fk_WORKER=worker.id
-                LEFT JOIN client ON contract.fk_CLIENT=client.personal_code`;
+const Workers = () => {
+  const query = `SELECT worker.name, worker.surname, 
+                worker.id, 
+                garage.name as 'garage', 
+                worker_status.name as 'status' 
+                FROM worker
+                LEFT JOIN garage ON worker.fk_GARAGE=garage.id 
+                LEFT JOIN worker_status on worker.worker_status=worker_status.id`;
 
-  const headers = ["ID", "Date", "Worker", "Client"];
+  const headers = ["ID", "Worker", "Status", "Workplace"];
 
   const removeElement = (index, setElements, elements) => {
     setElements(
@@ -28,18 +27,16 @@ const Contract = () => {
       return (
         <tr key={el.id}>
           <td>{el.id}</td>
-          <td>{el.order_date.substring(0, 10)}</td>
           <td>
-            {el.workername} {el.workersurname}
+            {el.name} {el.surname}
           </td>
-          <td>
-            {el.clientname} {el.clientsurname}
-          </td>
+          <td>{el.status}</td>
+          <td>{el.garage}</td>
           <RowButtons
-            link={`/contracts/id=${el.id}`}
+            link={`/workers/id=${el.id}`}
             onClick={() => {
               Axios.post("http://localhost:5000/api/sql", {
-                query: `DELETE FROM contract WHERE contract.id=${el.id}`,
+                query: `DELETE FROM worker WHERE worker.id=${el.id}`,
               }).then((res) => {
                 removeElement(index, setElements, elements);
               });
@@ -56,9 +53,9 @@ const Contract = () => {
       headers={headers}
       mapElements={mapElements}
       removeElement={removeElement}
-      newLink={"/contracts/id=new"}
+      newLink={"/workers/id=new"}
     />
   );
 };
 
-export default Contract;
+export default Workers;

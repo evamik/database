@@ -10,7 +10,12 @@ const RowButtons = (props) => {
       >
         edit
       </button>
-      <button className="btn btn-sm btn-danger py-0 px-2 m-0 mr-3">X</button>
+      <button
+        onClick={() => props.onClick()}
+        className="btn btn-sm btn-danger py-0 px-2 m-0 mr-3"
+      >
+        X
+      </button>
     </td>
   );
 };
