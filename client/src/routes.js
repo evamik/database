@@ -9,6 +9,8 @@ import Workers from "./components/Workers";
 import Worker from "./components/Worker";
 import Services from "./components/Services";
 import Service from "./components/Service";
+import Parts from "./components/Parts";
+import Part from "./components/Part";
 
 export default (
   <Router history={history}>
@@ -23,6 +25,8 @@ export default (
             <Route path="/workers/id=:id" component={Worker} />
             <Route exact path="/services" component={Services} />
             <Route path="/services/id=:id" component={Service} />
+            <Route exact path="/parts" component={Parts} />
+            <Route path="/parts/id=:id" component={Part} />
             <Route component={PageNotFound} />
           </Switch>
         </div>

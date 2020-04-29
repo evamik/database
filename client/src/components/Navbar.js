@@ -13,6 +13,9 @@ const Navbar = () => {
         <a className="btn btn-info py-1 mx-1" href="/services">
           Services
         </a>
+        <a className="btn btn-info py-1 mx-1" href="/parts">
+          Parts
+        </a>
       </div>
     </nav>
   );
