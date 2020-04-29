@@ -7,6 +7,8 @@ import Contracts from "./components/Contracts";
 import Contract from "./components/Contract";
 import Workers from "./components/Workers";
 import Worker from "./components/Worker";
+import Services from "./components/Services";
+import Service from "./components/Service";
 
 export default (
   <Router history={history}>
@@ -19,6 +21,8 @@ export default (
             <Route path="/contracts/id=:id" component={Contract} />
             <Route exact path="/workers" component={Workers} />
             <Route path="/workers/id=:id" component={Worker} />
+            <Route exact path="/services" component={Services} />
+            <Route path="/services/id=:id" component={Service} />
             <Route component={PageNotFound} />
           </Switch>
         </div>
