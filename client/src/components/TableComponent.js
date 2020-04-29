@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Axios from "axios";
+import { history } from "../redux/history";
 
 const TableComponent = (props) => {
   const [elements, setElements] = useState([]);
@@ -28,7 +29,14 @@ const TableComponent = (props) => {
         <thead className="thead-dark bg-dark">
           <tr>
             {mapTableHeader()}
-            <th></th>
+            <th className=" text-right">
+              <button
+                className="btn btn-primary btn-sm py-0"
+                onClick={() => history.push(props.newLink)}
+              >
+                new
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>{props.mapElements(elements)}</tbody>

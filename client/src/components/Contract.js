@@ -31,55 +31,86 @@ const Contract = (ownProps) => {
 
   useEffect(() => {
     Axios.post("http://localhost:5000/api/sql", {
-      query: `SELECT * FROM contract 
-            WHERE contract.id=${ownProps.match.params.id}`,
-    }).then((res) => {
-      Axios.post("http://localhost:5000/api/sql", {
-        query: `SELECT worker.id, worker.name, worker.surname
+      query: `SELECT worker.id, worker.name, worker.surname
             FROM worker`,
-      }).then((res2) => {
-        setWorkers(res2.data);
+    }).then((res2) => {
+      setWorkers([...res2.data]);
+
+      Axios.post("http://localhost:5000/api/sql", {
+        query: `SELECT client.personal_code AS 'id', client.name, client.surname
+            FROM client`,
+      }).then((res3) => {
+        setClients([...res3.data]);
 
         Axios.post("http://localhost:5000/api/sql", {
-          query: `SELECT client.personal_code AS 'id', client.name, client.surname
-            FROM client`,
-        }).then((res3) => {
-          setClients(res3.data);
+          query: `SELECT * FROM service`,
+        }).then((res6) => {
+          setServiceList([...res6.data]);
 
           Axios.post("http://localhost:5000/api/sql", {
-            query: `SELECT * FROM bill
-            WHERE bill.fk_CONTRACT=${ownProps.match.params.id}`,
-          }).then((res4) => {
-            setBills([...res4.data]);
-            setDefaultBills(JSON.parse(JSON.stringify([...res4.data])));
+            query: `SELECT * FROM parts`,
+          }).then((res8) => {
+            setPartList([...res8.data]);
+            let worker = 1;
+            if ([...res2.data].length > 0) worker = [...res2.data][0].id;
+            let client = 0;
+            if ([...res3.data].length > 0) client = [...res3.data][0].id;
+
+            if (ownProps.match.params.id === "new") {
+              const contr = {
+                id: 0,
+                order_date: moment().format("YYYY-MM-DD"),
+                repair_start_date: moment().format("YYYY-MM-DD"),
+                expected_end_date: moment().format("YYYY-MM-DD"),
+                real_end_date: moment().format("YYYY-MM-DD"),
+                fk_WORKER: worker,
+                fk_CLIENT: client,
+                sum: 0,
+                additional_costs: 0,
+              };
+
+              let service = 1;
+              if ([...res6.data].length > 0) service = [...res6.data][0].id;
+              const ordered_service = {
+                id: 0,
+                count: 1,
+                fk_SERVICE: service,
+                fk_CONTRACT: 0,
+              };
+              setServices([ordered_service]);
+              setContract(contr);
+              setDefaultContr({ ...contr });
+              return;
+            }
 
             Axios.post("http://localhost:5000/api/sql", {
-              query: `SELECT *
-                      FROM ordered_service
-                      WHERE ordered_service.fk_CONTRACT=${ownProps.match.params.id}`,
-            }).then((res5) => {
-              setServices([...res5.data]);
-              setDefaultServices(JSON.parse(JSON.stringify([...res5.data])));
-
+              query: `SELECT * FROM contract 
+            WHERE contract.id=${ownProps.match.params.id}`,
+            }).then((res) => {
               Axios.post("http://localhost:5000/api/sql", {
-                query: `SELECT * FROM service`,
-              }).then((res6) => {
-                setServiceList([...res6.data]);
+                query: `SELECT * FROM bill
+            WHERE bill.fk_CONTRACT=${ownProps.match.params.id}`,
+              }).then((res4) => {
+                setBills([...res4.data]);
+                setDefaultBills(JSON.parse(JSON.stringify([...res4.data])));
 
                 Axios.post("http://localhost:5000/api/sql", {
                   query: `SELECT *
-                      FROM parts_used
-                      WHERE parts_used.fk_CONTRACT=${ownProps.match.params.id}`,
-                }).then((res7) => {
-                  setParts([...res7.data]);
-                  setDefaultParts(JSON.parse(JSON.stringify([...res7.data])));
-                  console.log(res7.data);
+                      FROM ordered_service
+                      WHERE ordered_service.fk_CONTRACT=${ownProps.match.params.id}`,
+                }).then((res5) => {
+                  setServices([...res5.data]);
+                  setDefaultServices(
+                    JSON.parse(JSON.stringify([...res5.data]))
+                  );
 
                   Axios.post("http://localhost:5000/api/sql", {
-                    query: `SELECT * FROM parts`,
-                  }).then((res8) => {
-                    setPartList([...res8.data]);
-                    console.log(res8.data);
+                    query: `SELECT *
+                      FROM parts_used
+                      WHERE parts_used.fk_CONTRACT=${ownProps.match.params.id}`,
+                  }).then((res7) => {
+                    setParts([...res7.data]);
+                    setDefaultParts(JSON.parse(JSON.stringify([...res7.data])));
 
                     setDefaultContr(res.data[0]);
                     setContract(res.data[0]);
@@ -275,7 +306,7 @@ const Contract = (ownProps) => {
                 if (part.id !== 0)
                   setDeletedParts([...deletedParts, parts[index]]);
                 setParts(
-                  part.filter((p, id) => {
+                  parts.filter((p, id) => {
                     return id !== index;
                   })
                 );
@@ -309,7 +340,7 @@ const Contract = (ownProps) => {
           <tbody>
             <tr>
               <td className="text-right">ID:</td>
-              <td>{contract.id}</td>
+              <td>{contract.id === "new" ? "-" : contract.id}</td>
             </tr>
             <tr>
               <td className="text-right">Order date:</td>
@@ -317,7 +348,6 @@ const Contract = (ownProps) => {
                 <ValidInput
                   type="date"
                   onChange={(e) => {
-                    console.log(e.target.value);
                     setContract({ ...contract, order_date: e.target.value });
                   }}
                   value={contract.order_date.substring(0, 10)}
@@ -407,7 +437,7 @@ const Contract = (ownProps) => {
               <td className="text-right">Sum:</td>
               <td>
                 <ValidInput
-                  type="number"
+                  type="above zero number"
                   value={contract.sum}
                   onChange={(e) => {
                     setContract({
@@ -510,7 +540,7 @@ const Contract = (ownProps) => {
                       const newServ = {
                         id: 0,
                         count: 1,
-                        fk_SERVICE: 0,
+                        fk_SERVICE: 1,
                         fk_CONTRACT: ownProps.match.params.id,
                       };
                       setServices([...services, newServ]);
@@ -553,7 +583,7 @@ const Contract = (ownProps) => {
                       const newPart = {
                         id: 0,
                         count: 1,
-                        fk_PARTS: 0,
+                        fk_PARTS: 1,
                         fk_CONTRACT: ownProps.match.params.id,
                       };
                       setParts([...parts, newPart]);
@@ -570,19 +600,30 @@ const Contract = (ownProps) => {
       <div className="row justify-content-center mt-3">
         <button
           className="btn btn-primary"
-          disabled={!areChanges || !isValid}
+          disabled={
+            !areChanges ||
+            !isValid ||
+            workers.length === 0 ||
+            clients.length === 0 ||
+            (services.length > 0 && serviceList.length === 0) ||
+            (parts.length > 0 && partList.length === 0)
+          }
           onClick={() => {
             Axios.post("http://localhost:5000/api/sql", {
-              query: `UPDATE contract SET 
+              query: `INSERT INTO contract(id, order_date, repair_start_date, expected_end_date, real_end_date, sum, additional_costs, fk_WORKER, fk_CLIENT) 
+                      VALUES (${contract.id}, '${contract.order_date}', '${contract.repair_start_date}',
+                              '${contract.expected_end_date}', '${contract.real_end_date}', 
+                              '${contract.additional_costs}', '${contract.sum}', 
+                              '${contract.fk_WORKER}', '${contract.fk_CLIENT}')
+                      ON DUPLICATE KEY UPDATE 
                       order_date='${contract.order_date}', 
                       repair_start_date='${contract.repair_start_date}', 
                       expected_end_date='${contract.expected_end_date}', 
                       real_end_date='${contract.real_end_date}', 
+                      sum='${contract.sum}', 
+                      additional_costs='${contract.additional_costs}', 
                       fk_WORKER='${contract.fk_WORKER}', 
-                      fk_CLIENT='${contract.fk_CLIENT}',
-                      sum='${contract.sum}',
-                      additional_costs='${contract.additional_costs}' 
-                      WHERE contract.id=${ownProps.match.params.id}`,
+                      fk_CLIENT='${contract.fk_CLIENT}'`,
             }).then((res) => {
               let axios = [];
               if (deletedBills.length > 0)
@@ -605,7 +646,7 @@ const Contract = (ownProps) => {
                       (VALUES ${bills
                         .map(
                           (d) =>
-                            `(${d.number}, '${d.date}', '${d.sum}', ${d.fk_CONTRACT}) `
+                            `(${d.number}, '${d.date}', '${d.sum}', ${res.data.insertId}) `
                         )
                         .join(", ")}) 
                         ON DUPLICATE KEY UPDATE 
@@ -634,7 +675,7 @@ const Contract = (ownProps) => {
                       (VALUES ${services
                         .map(
                           (d) =>
-                            `(${d.id}, '${d.count}', '${d.fk_SERVICE}', ${d.fk_CONTRACT}) `
+                            `(${d.id}, '${d.count}', '${d.fk_SERVICE}', ${res.data.insertId}) `
                         )
                         .join(", ")}) 
                         ON DUPLICATE KEY UPDATE 
@@ -663,7 +704,7 @@ const Contract = (ownProps) => {
                       (VALUES ${parts
                         .map(
                           (d) =>
-                            `(${d.id}, '${d.count}', '${d.fk_PARTS}', ${d.fk_CONTRACT}) `
+                            `(${d.id}, '${d.count}', '${d.fk_PARTS}', ${res.data.insertId}) `
                         )
                         .join(", ")}) 
                         ON DUPLICATE KEY UPDATE 

@@ -33,7 +33,12 @@ const Contract = () => {
   };
 
   return (
-    <TableComponent query={query} headers={headers} mapElements={mapElements} />
+    <TableComponent
+      query={query}
+      headers={headers}
+      mapElements={mapElements}
+      newLink={"/contracts/id=new"}
+    />
   );
 };
 

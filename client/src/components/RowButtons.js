@@ -8,7 +8,7 @@ const RowButtons = (props) => {
         onClick={() => history.push(props.link)}
         className="btn btn-sm btn-info py-0 px-2 m-0 mr-1"
       >
-        redaguoti
+        edit
       </button>
       <button className="btn btn-sm btn-danger py-0 px-2 m-0 mr-3">X</button>
     </td>
