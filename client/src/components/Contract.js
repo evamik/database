@@ -613,7 +613,7 @@ const Contract = (ownProps) => {
               query: `INSERT INTO contract(id, order_date, repair_start_date, expected_end_date, real_end_date, sum, additional_costs, fk_WORKER, fk_CLIENT) 
                       VALUES (${contract.id}, '${contract.order_date}', '${contract.repair_start_date}',
                               '${contract.expected_end_date}', '${contract.real_end_date}', 
-                              '${contract.additional_costs}', '${contract.sum}', 
+                              '${contract.sum}', '${contract.additional_costs}', 
                               '${contract.fk_WORKER}', '${contract.fk_CLIENT}')
                       ON DUPLICATE KEY UPDATE 
                       order_date='${contract.order_date}', 
