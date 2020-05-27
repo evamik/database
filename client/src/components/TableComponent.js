@@ -11,16 +11,9 @@ const TableComponent = (props) => {
       query: props.query,
     })
       .then((res) => {
-        setElements(res.data);
-        Axios.post("http://localhost:5000/api/sql", {
-          query: props.query2,
-        })
-          .then((res) => {
-            setTotal(res.data[0].count);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        console.log(res.data);
+        setElements(props.mapTotal ? res.data.slice(0, -1) : res.data);
+        if (props.mapTotal) setTotal(res.data[res.data.length - 1].count);
       })
       .catch((err) => {
         console.log(err);

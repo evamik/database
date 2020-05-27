@@ -16,11 +16,11 @@ const ReportTable = (props) => {
                       LEFT JOIN contract ON contract.id = ordered_service.fk_CONTRACT
                       GROUP BY service
                     ) a ON a.service = service.id
-                  ORDER BY service.id`;
-  const query2 = `SELECT IFNULL(SUM(IF(YEAR(contract.order_date)>='${props.startDate}'
+                  UNION SELECT ${Number.MAX_SAFE_INTEGER}, NULL, IFNULL(SUM(IF(YEAR(contract.order_date)>='${props.startDate}'
                             AND YEAR(contract.order_date)<'${props.endDate}', ordered_service.count, NULL)), 0) as count
                   FROM ordered_service
-                  LEFT JOIN contract ON contract.id = ordered_service.fk_CONTRACT`;
+                  LEFT JOIN contract ON contract.id = ordered_service.fk_CONTRACT
+                  ORDER BY id`;
 
   const headers = ["ID", "Name", "Count"];
 
@@ -59,7 +59,6 @@ const ReportTable = (props) => {
   return (
     <TableComponent
       query={query}
-      query2={query2}
       headers={headers}
       mapElements={mapElements}
       mapTotal={mapTotal}
