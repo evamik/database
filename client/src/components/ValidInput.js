@@ -7,11 +7,11 @@ const ValidInput = (props) => {
   );
   const [type, setType] = useState("text");
 
-  useEffect(() => {
+  const handleValidation = () => {
     let bool = isValid;
     switch (props.type) {
       case "date":
-        bool = new Date(props.value) !== "Invalid Date";
+        bool = new Date(props.value).toString() !== "Invalid Date";
         break;
       case "number":
         bool = !isNaN(props.value) && props.value.length !== 0;
@@ -27,8 +27,14 @@ const ValidInput = (props) => {
 
     if (isValid !== bool) {
       setValid(bool);
-      if (props.validation) props.validation(bool);
+      if (props.validation) {
+        props.validation(bool);
+      }
     }
+  };
+
+  useEffect(() => {
+    handleValidation();
   }, [props.value]);
 
   useEffect(() => {

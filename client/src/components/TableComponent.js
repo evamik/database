@@ -4,6 +4,7 @@ import { history } from "../redux/history";
 
 const TableComponent = (props) => {
   const [elements, setElements] = useState([]);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     Axios.post("http://localhost:5000/api/sql", {
@@ -11,6 +12,15 @@ const TableComponent = (props) => {
     })
       .then((res) => {
         setElements(res.data);
+        Axios.post("http://localhost:5000/api/sql", {
+          query: props.query2,
+        })
+          .then((res) => {
+            setTotal(res.data[0].count);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       })
       .catch((err) => {
         console.log(err);
@@ -30,16 +40,29 @@ const TableComponent = (props) => {
           <tr>
             {mapTableHeader()}
             <th className=" text-right">
-              <button
-                className="btn btn-primary btn-sm py-0"
-                onClick={() => history.push(props.newLink)}
-              >
-                new
-              </button>
+              {props.reportLink ? (
+                <button
+                  className="btn btn-primary btn-sm py-0 mr-2"
+                  onClick={() => history.push(props.reportLink)}
+                >
+                  report
+                </button>
+              ) : null}
+              {props.newLink ? (
+                <button
+                  className="btn btn-primary btn-sm py-0"
+                  onClick={() => history.push(props.newLink)}
+                >
+                  new
+                </button>
+              ) : null}
             </th>
           </tr>
         </thead>
-        <tbody>{props.mapElements(elements, setElements)}</tbody>
+        <tbody>
+          {props.mapElements(elements, setElements)}
+          {props.mapTotal(total)}
+        </tbody>
       </table>
     </div>
   );

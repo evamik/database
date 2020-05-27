@@ -45,6 +45,7 @@ const Services = () => {
       headers={headers}
       mapElements={mapElements}
       removeElement={removeElement}
+      reportLink={"/services/report"}
       newLink={"/services/id=new"}
     />
   );
