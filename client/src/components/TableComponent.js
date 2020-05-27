@@ -61,7 +61,7 @@ const TableComponent = (props) => {
         </thead>
         <tbody>
           {props.mapElements(elements, setElements)}
-          {props.mapTotal(total)}
+          {props.mapTotal ? props.mapTotal(total) : null}
         </tbody>
       </table>
     </div>
